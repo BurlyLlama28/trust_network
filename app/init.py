@@ -14,4 +14,10 @@ def create_app() -> FastAPI:
         add_exception_handlers=True,
     )
 
+    register_routers(app=app)
+
     return app
+
+def register_routers(app: FastAPI):
+    from app.routers.authors import author_router
+    app.include_router(author_router, prefix="/author", tags=["Authors"])
