@@ -1,7 +1,3 @@
-from typing import List
-
-from fastapi import Query
-
 from app.models import Post
 
 
@@ -11,15 +7,15 @@ async def create_post(title: str, body: str, author_id: int) -> Post:
 
 async def edit_post(id : int, author_id: int, **kwargs) -> Post:
     await Post.filter(author_id = author_id, id = id).update(**kwargs)
-    return await Post.get_or_none(id = id)
+    return await get_post(id = id)
 
 async def get_post(id: int) -> Post:
-    return await Post.get_or_none(id = id)
+    return await Post.get(id = id)
 
-async def get_posts(limit: int = Query(10, gt=0), offset: int = Query(0, ge=0)) -> List[Post]:
+async def get_posts(limit: int , offset: int ) -> list[Post]:
     posts = await Post.all().limit(limit).offset(offset)
     return posts
 
 async def delete_post(id: int) -> None:
-    post = await Post.get_or_none(id = id)
+    post = await get_post(id = id)
     await post.delete()
