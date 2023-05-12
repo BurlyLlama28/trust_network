@@ -1,15 +1,13 @@
+from datetime import datetime
+from typing import Optional
+
 from pydantic import EmailStr
 from pydantic import validator as pyd_validator
 from pydantic.main import BaseModel
 
 
-class EmailStructureError(Exception):
-    """Custom error that is raised when email is not correct"""
-
-    def __init__(self, value: str, message: str) -> None:
-        self.value = value
-        self.message = message
-        super().__init__(message)
+def convert_to_optional(schema):
+    return {k: Optional[v] for k, v in schema.__annotations__.items()}
 
 class PasswordLengthError(Exception):
     """Custom error that is raised when password is too small"""
@@ -22,6 +20,7 @@ class PasswordLengthError(Exception):
 
 class Author(BaseModel):
     """Represents author object in DB"""
+    id: Optional[int]
     name: str
     email: EmailStr
     password: str
@@ -43,11 +42,12 @@ class Author(BaseModel):
 
 class Comment(BaseModel):
     """Represent Comment object in DB"""
-    post = int
-    parent_comment = int | None
-    content = str
-    author = int
-    created_at = str
+    id: Optional[int]
+    post_id : int
+    parent_comment_id : int = None
+    content : str
+    author_id : int
+    created_at : datetime = None
 
     class Config:
         orm_mode = True
@@ -55,10 +55,16 @@ class Comment(BaseModel):
 
 class Post(BaseModel):
     """Represent Post object in DB"""
-    title = str
-    body = str
-    author = int
-    created_at = str
+    id: Optional[int]
+    title : str
+    body : str
+    author_id : int
 
     class Config:
         orm_mode = True
+
+class PostOptional(Post):
+    __annotations__ = convert_to_optional(Post)
+
+class CommentOptional(Comment):
+    __annotations__ = convert_to_optional(Comment)

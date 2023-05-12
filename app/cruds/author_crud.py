@@ -1,6 +1,6 @@
 from typing import List
 
-from app.models import Author, Comment, Post
+from app.models import Author
 
 
 async def register_author(name: str, email: str, password: str) -> Author:
